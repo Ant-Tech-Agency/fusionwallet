@@ -31,7 +31,7 @@ export class WalletEffect {
     })
 
     tx.chainId = 46688
-    tx.from = from
+    tx.from = fro
     tx.gasPrice = Web3Store.default.gasPrice
     return await Web3Store.default.fsn.signAndTransmit(tx, WalletStore.default.account.signTransaction)
   }

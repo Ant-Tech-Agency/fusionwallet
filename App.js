@@ -1,49 +1,24 @@
 import './global'
-import React, { useEffect } from 'react'
-import Web3 from 'web3'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import Web3FusionExtend from 'web3-fusion-extend'
-import WebsocketProvider from './ether-socket-provider'
+import { Web3Store } from './src/stores/web3.store'
+import { WalletStore } from './src/stores/wallet.store'
+import { WalletEffect } from './src/effects/wallet.effect'
 
-let web3
-let fusion
-
-function refreshProvider(providerUrl) {
-  let retries = 0
-
-  const retry = (event) => {
-    if (event) {
-      console.log('Web3 provider disconnected or errored.')
-      retries += 1
-
-      if (retries > 5) {
-        console.log(`Max retries of 5 exceeding: ${retries} times tried`)
-        return setTimeout(refreshProvider, 5000)
-      }
-    } else {
-      console.log(`Reconnecting web3 provider`)
-      refreshProvider(providerUrl)
-    }
-
-    return null
-  }
-
-  const provider = new WebsocketProvider(providerUrl)
-
-  provider.on('end', () => retry())
-  provider.on('error', () => retry())
-
-  console.log('New Web3 provider initiated')
-
-  web3 = new Web3(provider)
-  fusion = Web3FusionExtend.extend(web3)
-
-  return provider
-}
+Web3Store.default.init()
 
 export default function App() {
+  const [privateKey, setPrivateKey] = useState(
+    'B2A6B4E1E510FE05AB051C9944B433427D90F2D117E1B32248A1B811BCDB54F9'
+  )
+
   useEffect(() => {
-    const provider = refreshProvider('wss://testnetpublicgateway1.fusionnetwork.io:10001')
+    WalletStore.default.init(privateKey).then(() => {
+      console.log('Initialized', WalletStore.default.address)
+      WalletEffect.getAllBalances().then(data => {
+        console.log('data', data)
+      })
+    })
   }, [])
 
   return (

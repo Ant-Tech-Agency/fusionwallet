@@ -31,7 +31,7 @@ export class WalletEffect {
       description: '{}',
     })
     console.log(tx)
-    tx.chainId = WalletConstant.ChainID
+    tx.chainId = 46688
     tx.from = address
     tx.gasPrice = Web3Store.default.gasPrice
 

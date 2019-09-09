@@ -111,6 +111,7 @@ export const Home = () => {
 
       await init()
     } catch (e) {
+      console.log(e)
     }
   }
 

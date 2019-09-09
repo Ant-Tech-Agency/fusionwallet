@@ -3,17 +3,16 @@ import {
   createStackNavigator,
   createSwitchNavigator,
 } from 'react-navigation'
-import { Home } from '@/screens/Home/Home'
-import { AccessWallet } from '@/screens/AccessWallet/AccessWallet'
-import { Loading } from '@/screens/Loading/Loading'
-import { CreateNewWallet } from '@/screens/CreateNewWallet/CreateNewWallet'
-import { AccessWalletWithKeyStore } from '@/screens/AccessWalletWithKeyStore/AccessWalletWithKeyStore'
-import { QuantumSwaps } from '@/screens/QuantumSwaps/QuantumSwaps'
+import { Home } from '../screens/Home/Home'
+import { AccessWallet } from '../screens/AccessWallet'
+// import { Loading } from '@/screens/Loading/Loading'
+// import { CreateNewWallet } from '@/screens/CreateNewWallet/CreateNewWallet'
+// import { AccessWalletWithKeyStore } from '@/screens/AccessWalletWithKeyStore/AccessWalletWithKeyStore'
+// import { QuantumSwaps } from '@/screens/QuantumSwaps/QuantumSwaps'
 
 export const PublicStack = createStackNavigator(
   {
     Home,
-    QuantumSwaps,
   },
   {
     initialRouteName: 'Home',
@@ -24,8 +23,8 @@ export const PublicStack = createStackNavigator(
 export const PrivateStack = createStackNavigator(
   {
     AccessWallet,
-    CreateNewWallet,
-    AccessWalletWithKeyStore,
+    // CreateNewWallet,
+    // AccessWalletWithKeyStore,
   },
   {
     initialRouteName: 'AccessWallet',
@@ -37,10 +36,10 @@ export const SwitchStack = createSwitchNavigator(
   {
     PublicStack,
     PrivateStack,
-    Loading,
+    // Loading,
   },
   {
-    initialRouteName: 'Loading',
+    initialRouteName: 'PrivateStack',
   }
 )
 

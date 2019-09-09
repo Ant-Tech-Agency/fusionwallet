@@ -60,7 +60,7 @@ const WebsocketProvider = function WebsocketProvider(url, options) {
   var requestOptions = options.requestOptions || undefined
 
   // When all node core implementations that do not have the
-  // WHATWG compatible URL parser go out of service this line can be removed.
+  // WHATWG compatible URL parser go out of services this line can be removed.
   if (parsedURL.auth) {
     headers.authorization = 'Basic ' + _btoa(parsedURL.auth)
   }

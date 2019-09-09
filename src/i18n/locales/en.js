@@ -1,0 +1,33 @@
+export const en = {
+  accessExitsTitle: 'Access Existing Wallet',
+  privateKey: 'Private Key',
+  enterPrivateKey: 'Enter your private key',
+  openWallet: 'Open The Wallet',
+  walletInfo: 'Wallet Info',
+  fusionBalance: 'Fusion Balance',
+  publicAddress: 'Public Address',
+  assetCreation: 'Asset Creation',
+  assetName: 'Asset Name',
+  supply: 'Total Supply',
+  createAssets: 'Create Asset',
+  sendAsset: 'Send Asset',
+  to: 'To',
+  quantity: 'Quantity',
+  logout: 'Log Out',
+  assetSymbol: 'Asset Symbol',
+  decimals: 'Decimals',
+  fixed: 'Fixed',
+  changeable: 'Changeable',
+  createNewWallet: 'Create New Wallet',
+  createNoteFirst:
+    'To create a new FUSION wallet you need to create a secure password. Please ensure that this password is stored safely. This password ',
+  createNoteUnderLine: 'cannot',
+  createNoteLast: ' be recovered if you lose it',
+  enterPassword: 'Enter a password',
+  passwordPlaceHolder: 'Must be 9 characters or greater',
+  createSubNote:
+    'This password encrypts your private key. You will need this password and also your private key to unlock your wallet.',
+  openWalletKeyStore: 'Open The Wallet With Keystore/JSON File ',
+  accessWallet: 'Access Wallet',
+
+}

@@ -76,7 +76,6 @@ export const Home = () => {
         assets,
         balances
       )
-      console.log(userAssets)
       setAssets(userAssets)
     } catch (e) {
       return e
@@ -121,19 +120,22 @@ export const Home = () => {
         alert('Please select asset that you want to send')
         return
       }
+      if (!quantity) {
+        alert('Please enter quantity that you want to send')
+        return
+      }
 
       const data = {
-        asset: pickedAsset.ID,
+        asset: pickedAsset,
         value: quantity,
         to: toAddress,
       }
-      const txHash = await WalletEffect.sendAsset({
-        ...data,
-        start: fromDate.toString(),
-        end: toDate.toString(),
-      })
+      const txHash = await WalletEffect.sendAsset(data)
       alert(txHash)
+      setPickedAsset(null)
+      setQuantity('')
 
+      await init()
 
 
       // switch (timeLockType) {
@@ -266,19 +268,19 @@ export const Home = () => {
                 onChangeText={text => setQuantity(text)}
                 name={I18n.t('quantity')}
               />
-              {/*{pickedAsset && (*/}
-              {/*  <View>*/}
-              {/*    <Text style={s.labelCover} numberOfLines={1}>*/}
-              {/*      <Text style={s.label}>Asset Picked :</Text>{' '}*/}
-              {/*      {pickedAsset.Name}*/}
-              {/*    </Text>*/}
-              {/*    <TimeLock*/}
-              {/*      onFromDateChange={date => setFromDate(date)}*/}
-              {/*      onToDateChange={date => setToDate(date)}*/}
-              {/*      setTimeLockType={tag => setTimeLockType(tag)}*/}
-              {/*    />*/}
-              {/*  </View>*/}
-              {/*)}*/}
+              {pickedAsset && (
+                <View>
+                  <Text style={s.labelCover} numberOfLines={1}>
+                    <Text style={s.label}>Asset Picked :</Text>{' '}
+                    {pickedAsset.Name}
+                  </Text>
+                  {/*<TimeLock*/}
+                  {/*  onFromDateChange={date => setFromDate(date)}*/}
+                  {/*  onToDateChange={date => setToDate(date)}*/}
+                  {/*  setTimeLockType={tag => setTimeLockType(tag)}*/}
+                  {/*/>*/}
+                </View>
+              )}
 
               <AButton
                 positions="right"

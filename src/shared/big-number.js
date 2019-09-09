@@ -16,14 +16,11 @@ export class BigNumber {
     return isNaN(_tmp) || _tmp < 0
   }
   static generateDecimal(decimal) {
-    console.log('ahihi')
 
     let returnDecimals = '1'
     for (let i = 0; i < decimal; i++) {
       returnDecimals += '0'
     }
-
-    console.log(parseInt(returnDecimals))
     return parseInt(returnDecimals)
   }
 

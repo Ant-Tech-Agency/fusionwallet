@@ -31,20 +31,16 @@ async function getAllAssets() {
   }
 }
 
-function getAssetsFromBalances(assets, balances){
-
-  // return  sortBy(o => o.Name, data)
+function getAssetsFromBalances(assets, balances) {
+  delete balances['0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']
   return Object.keys(balances).reduce((acc, key) => {
-    if (key !== '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff') {
-      console.log(key)
-      const asset = assets[key]
-      asset.Amount = balances[key]
-      return acc.concat(assets[key])
-    }
+    const asset = assets[key]
+    asset.Amount = balances[key]
+    return acc.concat(assets[key])
   }, [])
 }
 
 export const AssetEffect = {
   getAllAssets,
-  getAssetsFromBalances
+  getAssetsFromBalances,
 }

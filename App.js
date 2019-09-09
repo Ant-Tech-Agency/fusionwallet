@@ -11,19 +11,19 @@ export default function App() {
   const [privateKey, setPrivateKey] = useState(
     'B2A6B4E1E510FE05AB051C9944B433427D90F2D117E1B32248A1B811BCDB54F9'
   )
+  const [publicKey, setPublicKey] = useState(
+    ''
+  )
 
   useEffect(() => {
     WalletStore.default.init(privateKey).then(() => {
-      console.log('Initialized', WalletStore.default.address)
-      WalletEffect.getAllBalances().then(data => {
-        console.log('data', data)
-      })
+      setPublicKey(WalletStore.default.address)
     })
   }, [])
 
   return (
     <View style={styles.container}>
-      <Text>{'Linh'}</Text>
+      <Text>{publicKey}</Text>
     </View>
   );
 }

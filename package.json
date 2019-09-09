@@ -8,18 +8,21 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "buffer": "^5.4.2",
     "expo": "^34.0.1",
+    "node-libs-browser": "^2.2.1",
+    "process": "^0.11.10",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
     "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
-    "react-native-web": "^0.11.4"
+    "react-native-web": "^0.11.4",
+    "use-async-effect": "^2.1.1",
+    "web3": "^1.2.1",
+    "web3-core-helpers": "^1.2.1",
+    "web3-fusion-extend": "^1.0.0-beta.36",
+    "websocket": "^1.0.29"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-do-expressions": "^7.5.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
-    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
-    "@babel/plugin-proposal-partial-application": "^7.4.4",
-    "@babel/plugin-proposal-pipeline-operator": "^7.5.0",
     "babel-preset-expo": "^6.0.0"
   },
   "private": true

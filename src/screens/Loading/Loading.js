@@ -1,10 +1,10 @@
-import {ActivityIndicator, View} from 'react-native'
-import React, {useEffect} from 'react'
-import {useNavigation} from 'react-navigation-hooks'
-import { WalletStore } from "../../stores/wallet.store"
+import { ActivityIndicator, View } from 'react-native'
+import React, { useEffect } from 'react'
+import { useNavigation } from 'react-navigation-hooks'
+import { WalletStore } from '../../stores/wallet.store'
 
-export const Loading= () => {
-  const {navigate} = useNavigation()
+export const Loading = () => {
+  const { navigate } = useNavigation()
 
   async function auth() {
     try {
@@ -32,10 +32,10 @@ export const Loading= () => {
       style={{
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
       }}
     >
-      <ActivityIndicator size={'large'} color={'tomato'}/>
+      <ActivityIndicator size={'large'} color={'tomato'} />
     </View>
   )
 }

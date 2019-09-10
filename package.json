@@ -28,7 +28,6 @@
     "i18n-js": "^3.3.0",
     "lodash": "^4.17.15",
     "node-libs-browser": "^2.2.1",
-    "prettier": "^1.18.2",
     "process": "^0.11.10",
     "react": "16.8.3",
     "react-dom": "^16.8.6",

@@ -4,7 +4,7 @@ import {
   createSwitchNavigator,
 } from 'react-navigation'
 import { Home } from '../screens/Home/Home'
-import { AccessWallet } from '../screens/AccessWallet'
+import { AccessWallet } from '../screens/AccessWallet/AccessWallet'
 // import { Loading } from '@/screens/Loading/Loading'
 // import { CreateNewWallet } from '@/screens/CreateNewWallet/CreateNewWallet'
 // import { AccessWalletWithKeyStore } from '@/screens/AccessWalletWithKeyStore/AccessWalletWithKeyStore'

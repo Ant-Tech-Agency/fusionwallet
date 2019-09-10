@@ -22,6 +22,8 @@
     "crypto-browserify": "^3.12.0",
     "ethereumjs-util": "^6.1.0",
     "expo": "^34.0.1",
+    "expo-document-picker": "~6.0.0",
+    "expo-file-system": "~6.0.0",
     "expo-localization": "^6.0.0",
     "expo-random": "~6.0.0",
     "expo-secure-store": "~6.0.0",

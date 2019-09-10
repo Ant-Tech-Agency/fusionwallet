@@ -55,8 +55,8 @@ export const AccessWallet = () => {
         </View>
 
         <AButton onPress={onUnlock} title={I18n.t('openWallet')} />
-        {/*<AButton onPress={onCreateNew} title={I18n.t('createNewWallet')} />*/}
-        {/*<AButton onPress={onOpenFile} title={I18n.t('openWalletKeyStore')} />*/}
+        <AButton onPress={onCreateNew} title={I18n.t('createNewWallet')} />
+        <AButton onPress={onOpenFile} title={I18n.t('openWalletKeyStore')} />
       </KeyboardAvoidingView>
     </SafeAreaView>
   )

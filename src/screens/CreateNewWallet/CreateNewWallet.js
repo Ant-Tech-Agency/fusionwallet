@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Image,
   Platform,
@@ -14,10 +14,29 @@ import { AButton } from '../../../components/AButton/'
 import { Wallet } from '../../libs/wallet'
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from 'react-navigation-hooks'
+import { useAsyncEffect } from 'use-async-effect'
+import { PATH } from '../../constants/FilePath'
 
 export const CreateNewWallet = () => {
   const { goBack } = useNavigation()
   const [password, setPassword] = useState('123456789')
+
+
+  async function checkDir() {
+    const fileInfo = await FileSystem.getInfoAsync(PATH)
+    if (!fileInfo.exists) {
+      await FileSystem.makeDirectoryAsync(PATH)
+    }
+  }
+
+  useEffect(() => {
+    checkDir().then(a => console.log(a))
+  }, [])
+
+  async function getDirContent() {
+    const dirContent = await FileSystem.readDirectoryAsync(PATH)
+    console.log(dirContent)
+  }
 
   async function onCreateFile() {
     try {
@@ -27,13 +46,14 @@ export const CreateNewWallet = () => {
         n: 8192,
       })
 
-      const path = FileSystem.documentDirectory + wallet.getV3FileName()
+      const keyStorePath = PATH + wallet.getV3FileName()
+      await FileSystem.writeAsStringAsync(
+        keyStorePath,
+        JSON.stringify(keystore)
+      )
+      alert('Create wallet success')
+      await getDirContent()
 
-      await FileSystem.writeAsStringAsync(path, JSON.stringify(keystore))
-
-      const info = await FileSystem.getInfoAsync(path)
-
-      alert(JSON.stringify(info))
     } catch (e) {
       alert(e.message)
     }

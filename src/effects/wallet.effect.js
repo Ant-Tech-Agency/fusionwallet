@@ -10,7 +10,6 @@ export class WalletEffect {
 
   static async createAsset(data) {
     const { total, decimals, name, symbol, canChange = false } = data
-    console.log(data)
     // const error = WalletValidator.createAsset(data)
     //
     // if (error && error.message) {
@@ -18,7 +17,6 @@ export class WalletEffect {
     // }
 
     const address = WalletStore.default.address
-    console.log(address)
     const supply = new BigNumber(total, decimals)
 
     const tx = await Web3Store.default.fsntx.buildGenAssetTx({
@@ -53,7 +51,6 @@ export class WalletEffect {
   }
 
   static async sendAsset(data) {
-    console.log(data)
     const { to, value, asset } = data
     const from = WalletStore.default.address
     const { Decimals, AssetID } = asset
@@ -75,7 +72,6 @@ export class WalletEffect {
     )
   }
   static async sendAssetDateRange(data) {
-    console.log(data)
     const { to, value, asset, start, end } = data
     const { Decimals, AssetID } = asset
     const from = WalletStore.default.address
@@ -103,7 +99,6 @@ export class WalletEffect {
   }
 
   static async sendAssetScheduled(data) {
-    console.log(data)
     const from = WalletStore.default.address
     const { to, value, asset, start } = data
     const { Decimals, AssetID } = asset
@@ -111,8 +106,6 @@ export class WalletEffect {
     const valueString = amount.toString()
     const end = Web3Store.default.fsn.consts.TimeForeverStr
     const startTime = this.getHexDate(this.convertDate(start))
-    console.log(end)
-    console.log(startTime)
     const tx = await Web3Store.default.fsntx.buildAssetToTimeLockTx({
       asset: AssetID,
       from,

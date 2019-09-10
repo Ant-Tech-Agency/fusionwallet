@@ -272,9 +272,9 @@ export const Home = () => {
                     {pickedAsset.Name}
                   </Text>
                   <TimeLock
-                    onFromDateChange={date => setFromDate(date)}
-                    onToDateChange={date => setToDate(date)}
-                    setTimeLockType={tag => setTimeLockType(tag)}
+                    onFromDateChange={setFromDate}
+                    onToDateChange={setToDate}
+                    setTimeLockType={setTimeLockType}
                   />
                 </View>
               )}

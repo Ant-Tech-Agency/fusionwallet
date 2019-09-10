@@ -17,7 +17,7 @@ export const Loading = () => {
         navigate('AccessWallet')
       }
     } catch (e) {
-      return e
+      console.log(e)
     }
   }
 

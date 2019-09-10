@@ -24,8 +24,8 @@ import { useAsyncEffect } from "use-async-effect"
 import { WalletEffect } from "../../effects/wallet.effect"
 import { AssetEffect } from "../../effects/asset.effect"
 import { WalletStore } from "../../stores/wallet.store"
-// import { TimeLock } from "@/screens/Home/components/TimeLock"
-// import { TxType } from "@/constants/tx-type.constant"
+import { TimeLock } from "./components/TimeLock"
+import { TxType } from "../../constants/tx-type.constant"
 
 export const Home = () => {
   const { navigate } = useNavigation()
@@ -43,7 +43,7 @@ export const Home = () => {
   const [symbol, setSymbol] = useState('')
   const [isFixed, setIsFixed] = useState(false)
   const [decimals, setDecimals] = useState(18)
-  // const [timeLockType, setTimeLockType] = useState()
+  const [timeLockType, setTimeLockType] = useState()
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
 
@@ -131,37 +131,33 @@ export const Home = () => {
         value: quantity,
         to: toAddress,
       }
-      const txHash = await WalletEffect.sendAsset(data)
-      alert(txHash)
-      setPickedAsset(null)
-      setQuantity('')
+
+      switch (timeLockType) {
+        case TxType.DateRange: {
+          const txHash = await WalletEffect.sendAssetDateRange({
+            ...data,
+            start: fromDate.toString(),
+            end: toDate.toString(),
+          })
+          alert(txHash)
+          break
+        }
+        case TxType.Scheduled: {
+          const txHash = await WalletEffect.sendAssetScheduled({
+            ...data,
+            start: fromDate.toString(),
+          })
+          alert(txHash)
+          break
+        }
+        case TxType.None: {
+          const txHash = await WalletEffect.sendAsset(data)
+          alert(txHash)
+        }
+      }
 
       await init()
 
-
-      // switch (timeLockType) {
-      //   case TxType.DateRange: {
-      //     const txHash = await WalletEffect.sendAssetDateRange({
-      //       ...data,
-      //       start: fromDate.toString(),
-      //       end: toDate.toString(),
-      //     })
-      //     alert(txHash)
-      //     break
-      //   }
-      //   case TxType.Scheduled: {
-      //     const txHash = await WalletEffect.sendAssetScheduled({
-      //       ...data,
-      //       start: fromDate.toString(),
-      //     })
-      //     alert(txHash)
-      //     break
-      //   }
-      //   case TxType.None: {
-      //     const txHash = await WalletEffect.sendAsset(data)
-      //     alert(txHash)
-      //   }
-      // }
 
       setPickedAsset(null)
       setQuantity('')
@@ -275,11 +271,11 @@ export const Home = () => {
                     <Text style={s.label}>Asset Picked :</Text>{' '}
                     {pickedAsset.Name}
                   </Text>
-                  {/*<TimeLock*/}
-                  {/*  onFromDateChange={date => setFromDate(date)}*/}
-                  {/*  onToDateChange={date => setToDate(date)}*/}
-                  {/*  setTimeLockType={tag => setTimeLockType(tag)}*/}
-                  {/*/>*/}
+                  <TimeLock
+                    onFromDateChange={setFromDate}
+                    onToDateChange={setToDate}
+                    setTimeLockType={setTimeLockType}
+                  />
                 </View>
               )}
 

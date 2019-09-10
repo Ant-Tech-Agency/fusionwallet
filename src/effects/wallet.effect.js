@@ -10,7 +10,6 @@ export class WalletEffect {
 
   static async createAsset(data) {
     const { total, decimals, name, symbol, canChange = false } = data
-    console.log(data)
     // const error = WalletValidator.createAsset(data)
     //
     // if (error && error.message) {
@@ -18,7 +17,6 @@ export class WalletEffect {
     // }
 
     const address = WalletStore.default.address
-    console.log(address)
     const supply = new BigNumber(total, decimals)
 
     const tx = await Web3Store.default.fsntx.buildGenAssetTx({
@@ -53,7 +51,6 @@ export class WalletEffect {
   }
 
   static async sendAsset(data) {
-    console.log(data)
     const { to, value, asset } = data
     const from = WalletStore.default.address
     const { Decimals, AssetID } = asset
@@ -73,6 +70,75 @@ export class WalletEffect {
       tx,
       WalletStore.default.account.signTransaction
     )
+  }
+  static async sendAssetDateRange(data) {
+    const { to, value, asset, start, end } = data
+    const { Decimals, AssetID } = asset
+    const from = WalletStore.default.address
+    const amount = new BigNumber(value, Decimals)
+    const valueString = amount.toString()
+    const startTime = this.getHexDate(this.convertDate(start))
+    const endTime = this.getHexDate(this.convertDate(end))
+    const tx = await Web3Store.default.fsntx.buildAssetToTimeLockTx({
+      asset: AssetID,
+      from,
+      to,
+      start: startTime,
+      end: endTime,
+      value: valueString,
+    })
+
+    tx.from = from
+    tx.chainId = 46688
+    tx.gasPrice = Web3Store.default.gasPrice
+
+    return await Web3Store.default.fsn.signAndTransmit(
+      tx,
+      WalletStore.default.account.signTransaction
+    )
+  }
+
+  static async sendAssetScheduled(data) {
+    const from = WalletStore.default.address
+    const { to, value, asset, start } = data
+    const { Decimals, AssetID } = asset
+    const amount = new BigNumber(value, Decimals)
+    const valueString = amount.toString()
+    const end = Web3Store.default.fsn.consts.TimeForeverStr
+    const startTime = this.getHexDate(this.convertDate(start))
+    const tx = await Web3Store.default.fsntx.buildAssetToTimeLockTx({
+      asset: AssetID,
+      from,
+      to,
+      start: startTime,
+      end,
+      value: valueString,
+    })
+
+    tx.from = from
+    tx.chainId = 46688
+    tx.gasPrice = Web3Store.default.gasPrice
+
+    return await Web3Store.default.fsn.signAndTransmit(
+      tx,
+      WalletStore.default.account.signTransaction
+    )
+  }
+  static convertDate(inputFormat) {
+    function pad(s) {
+      return s < 10 ? '0' + s : s
+    }
+
+    let d = new Date(inputFormat)
+    return [
+      d.getUTCFullYear(),
+      pad(d.getUTCMonth() + 1),
+      pad(d.getUTCDate()),
+    ].join('-')
+  }
+
+  static getHexDate(d) {
+    return '0x' + (new Date(d).getTime() / 1000).toString(16)
   }
 }
 

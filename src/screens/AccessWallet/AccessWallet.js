@@ -12,8 +12,8 @@ import React, { useState } from 'react'
 import { WalletStore } from '../../stores/wallet.store'
 import { useNavigation } from 'react-navigation-hooks'
 import { AButton } from '../../../components/AButton'
-import { colors, images, metrics } from '@/themes'
-import I18n from '@/i18n'
+import { colors, images, metrics } from '../../themes'
+import I18n from '../../i18n'
 
 export const AccessWallet = () => {
   const [privateKey, setPrivateKey] = useState(
@@ -55,8 +55,8 @@ export const AccessWallet = () => {
         </View>
 
         <AButton onPress={onUnlock} title={I18n.t('openWallet')} />
-        <AButton onPress={onCreateNew} title={I18n.t('createNewWallet')} />
-        <AButton onPress={onOpenFile} title={I18n.t('openWalletKeyStore')} />
+        {/*<AButton onPress={onCreateNew} title={I18n.t('createNewWallet')} />*/}
+        {/*<AButton onPress={onOpenFile} title={I18n.t('openWalletKeyStore')} />*/}
       </KeyboardAvoidingView>
     </SafeAreaView>
   )

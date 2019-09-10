@@ -1,5 +1,4 @@
 import * as ethUtil from 'ethereumjs-util'
-import BigNumberJS from "bignumber.js"
 
 const BN = ethUtil.BN
 
@@ -9,33 +8,20 @@ export class BigNumber {
     this._data = BigNumber.makeBigNumber(amount, decimals)
   }
 
-  static get BN() {
-    return BigNumberJS
-  }
 
-  static makeDiv(number, divNumber, decimals) {
-    BigNumberJS.config({
-      DECIMAL_PLACES: decimals > 0 ? decimals - 1 : 0
-    })
-    const makeReceiveAmountBN = new BigNumberJS(number)
-    const makeSendAmountDiv = makeReceiveAmountBN.div(divNumber)
-
-    return new BigNumber(makeSendAmountDiv.toString(), decimals)
-  }
-
-  static generateDecimal(decimal) {
-    let returnDecimals = '1'
-    for (let i = 0; i < decimal; i++) {
-      returnDecimals += '0'
-    }
-
-    return parseInt(returnDecimals)
-  }
 
   static isNegativeNumber(value) {
     const _tmp = parseInt(value)
 
     return isNaN(_tmp) || _tmp < 0
+  }
+  static generateDecimal(decimal) {
+
+    let returnDecimals = '1'
+    for (let i = 0; i < decimal; i++) {
+      returnDecimals += '0'
+    }
+    return parseInt(returnDecimals)
   }
 
   static makeBigNumber(amount, decimals) {

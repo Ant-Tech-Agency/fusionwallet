@@ -27,7 +27,6 @@ export const TimeLock = ({
   const [dateToForever, setDateToForever] = useState(null)
   const [currentDate, setCurrentDate] = useState(new Date())
 
-
   async function onOpenDatePicker(tag) {
     switch (tag) {
       case Tag.To:
@@ -71,16 +70,26 @@ export const TimeLock = ({
           // May 25 2020. Month 0 is January.
           date: new Date(),
         })
-        if (res.action !== DatePickerAndroid.dismissedAction) {
-          let date = new Date(res.year, res.month, res.day)
+        console.log(res)
+        const { action, day, month, year } = res
+        console.log(DatePickerAndroid.dismissedAction)
+        if (action !== DatePickerAndroid.dismissedAction) {
+          console.log('true case')
+          let date = new Date(year, month, day)
           switch (tag) {
             case Tag.From:
+              console.log('fromcase')
+              onFromDateChange(date)
               setFromDate(date)
               break
             case Tag.To:
+              onToDateChange(date)
+              console.log('tocase')
               setToDate(date)
               break
             case Tag.Forever:
+              onFromDateChange(date)
+              console.log('forevercase')
               setDateToForever(date)
               break
             default:

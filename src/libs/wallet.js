@@ -3,6 +3,7 @@ import { createCipheriv, createDecipheriv, createHash, pbkdf2Sync } from 'crypto
 import scryptsy from 'scryptsy'
 import { ErrorMsg } from '../constants/error-msg.constant'
 import { v4 } from 'uuid'
+import { Random } from './random'
 
 export class Wallet {
   _privBuffer

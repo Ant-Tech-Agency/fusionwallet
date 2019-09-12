@@ -28,7 +28,6 @@ export class WalletEffect {
       total: supply.toHex(),
       description: '{}',
     })
-    console.log(tx)
     tx.chainId = 46688
     tx.from = address
     tx.gasPrice = Web3Store.default.gasPrice

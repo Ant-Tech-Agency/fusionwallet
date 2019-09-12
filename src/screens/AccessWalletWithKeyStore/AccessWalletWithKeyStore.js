@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks'
-import * as DP from 'expo-document-picker'
 import * as FS from 'expo-file-system'
 import { WalletStore } from '../../stores/wallet.store'
 import { Wallet } from '../../libs/wallet'
@@ -22,7 +21,7 @@ import { PATH } from '../../constants/FilePath'
 
 export const AccessWalletWithKeyStore = () => {
   const { goBack, navigate } = useNavigation()
-  const [password, setPassword] = useState(null)
+  const [password, setPassword] = useState('123456789')
   const [fileInfo, setFileInfo] = useState(null)
   const [fileContent, setFileContent] = useState(null)
   const [isKeyStore, setIsKeyStore] = useState(false)
@@ -33,13 +32,11 @@ export const AccessWalletWithKeyStore = () => {
   }
 
   async function onOpenFile(fileName) {
-    console.log(fileName)
     const fileContent = await FS.readAsStringAsync(PATH + fileName)
-    console.log(fileContent)
     setFileContent(fileContent)
     setIsKeyStore(true)
     setFileInfo(fileName)
-
+    pickerToggle()
   }
 
   async function onUnLockWithKeyStore() {

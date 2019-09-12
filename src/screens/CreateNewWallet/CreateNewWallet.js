@@ -14,7 +14,6 @@ import { AButton } from '../../../components/AButton/'
 import { Wallet } from '../../libs/wallet'
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from 'react-navigation-hooks'
-import { useAsyncEffect } from 'use-async-effect'
 import { PATH } from '../../constants/FilePath'
 
 export const CreateNewWallet = () => {
@@ -34,8 +33,7 @@ export const CreateNewWallet = () => {
   }, [])
 
   async function getDirContent() {
-    const dirContent = await FileSystem.readDirectoryAsync(PATH)
-    console.log(dirContent)
+     await FileSystem.readDirectoryAsync(PATH)
   }
 
   async function onCreateFile() {

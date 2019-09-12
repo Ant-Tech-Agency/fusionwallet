@@ -9,7 +9,6 @@ export const Loading = () => {
   async function auth() {
     try {
       const key = await WalletStore.getPrivateKey()
-
       if (key) {
         await WalletStore.default.init(key)
         navigate('Home')
@@ -18,6 +17,7 @@ export const Loading = () => {
       }
     } catch (e) {
       console.log(e)
+      await WalletStore.deletePrivateKey()
     }
   }
 

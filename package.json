@@ -52,5 +52,11 @@
   "devDependencies": {
     "babel-preset-expo": "^6.0.0"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 80
+  },
   "private": true
 }

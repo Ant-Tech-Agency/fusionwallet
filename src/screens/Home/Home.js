@@ -192,17 +192,17 @@ export const Home = () => {
           </View>
 
 
-          {/*<View style={s.wrapInput}>*/}
-          {/*  <Text style={s.titleFeature}> Quantum Swaps </Text>*/}
-          {/*  {assets.length > 0 ? (*/}
-          {/*    <AButton*/}
-          {/*      title={'Quantum Swaps'}*/}
-          {/*      onPress={() => navigate('QuantumSwaps', { data: assets })}*/}
-          {/*    />*/}
-          {/*  ) : (*/}
-          {/*    <ActivityIndicator size={'large'} color={'tomato'} />*/}
-          {/*  )}*/}
-          {/*</View>*/}
+          <View style={s.wrapInput}>
+            <Text style={s.titleFeature}> Quantum Swaps </Text>
+            {assets.length > 0 ? (
+              <AButton
+                title={'Quantum Swaps'}
+                onPress={() => navigate('QuantumSwaps', { data: assets })}
+              />
+            ) : (
+              <ActivityIndicator size={'large'} color={'tomato'} />
+            )}
+          </View>
 
 
           <View style={s.wrapInput}>

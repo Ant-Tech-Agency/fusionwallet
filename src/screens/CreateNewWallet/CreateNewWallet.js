@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { colors, images, metrics } from '../../themes'
 import I18n from '../../i18n'
-import { AButton } from '../../../components/AButton/'
+import { AButton } from '../../../components/AButton'
 import { Wallet } from '../../libs/wallet'
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from 'react-navigation-hooks'

@@ -9,13 +9,13 @@ import {
 } from 'react-native'
 import { metrics } from '../../../themes'
 import * as FS from 'expo-file-system'
-import { PATH } from '../../../constants/FilePath'
+import { PATH, ROOT } from '../../../constants/FilePath'
 
 export const DocumentPicker = ({ onPress, onPick }) => {
   const [dirs, setDirs] = useState([])
 
   async function getDirContent() {
-    const dirContent = await FS.readDirectoryAsync(PATH)
+    const dirContent = await FS.readDirectoryAsync(PATH+ROOT)
     setDirs(dirContent)
   }
 

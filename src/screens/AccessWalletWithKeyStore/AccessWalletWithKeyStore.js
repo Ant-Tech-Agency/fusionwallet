@@ -10,46 +10,45 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks'
-import * as DP from 'expo-document-picker'
 import * as FS from 'expo-file-system'
 import { WalletStore } from '../../stores/wallet.store'
 import { Wallet } from '../../libs/wallet'
 import { colors, images, metrics } from '../../themes'
 import I18n from '../../i18n'
 import { AButton } from '../../../components/AButton'
+import { DocumentPicker } from './component/DocumentPicker'
+import { PATH } from '../../constants/FilePath'
 
 export const AccessWalletWithKeyStore = () => {
   const { goBack, navigate } = useNavigation()
-  const [password, setPassword] = useState(null)
+  const [password, setPassword] = useState('123456789')
   const [fileInfo, setFileInfo] = useState(null)
   const [fileContent, setFileContent] = useState(null)
   const [isKeyStore, setIsKeyStore] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
-  async function onOpenFile() {
-    try {
-      const fileInfo = await DP.getDocumentAsync({
-        type: '*/*',
-        copyToCacheDirectory: true,
-      })
-      if (fileInfo.type === 'success') {
-        const fileContentString = await FS.readAsStringAsync(fileInfo.uri)
-        const fileContentJSON = JSON.parse(fileContentString)
-        if (fileContentJSON.version === 3) {
-          setIsKeyStore(true)
-          setFileInfo(fileInfo)
-          setFileContent(fileContentString)
-        }
-      }
-    } catch (e) {
-      alert(e.message)
-    }
+  function pickerToggle() {
+    setIsOpen(!isOpen)
+  }
+
+  async function onOpenFile(fileName) {
+    const fileContent = await FS.readAsStringAsync(PATH + fileName)
+    setFileContent(fileContent)
+    setIsKeyStore(true)
+    setFileInfo(fileName)
+    pickerToggle()
   }
 
   async function onUnLockWithKeyStore() {
     try {
-      WalletStore.default.wallet = await Wallet.fromV3(fileContent, password, true)
+      WalletStore.default.wallet = await Wallet.fromV3(
+        fileContent,
+        password,
+        true
+      )
       navigate('Home')
     } catch (e) {
+      console.log(e)
       alert(e.message)
     }
   }
@@ -62,7 +61,7 @@ export const AccessWalletWithKeyStore = () => {
         {fileInfo && (
           <TouchableOpacity onPress={onOpenFile} style={s.fileHandler}>
             <View style={s.fileHandlerContent}>
-              <Text>Current file name: {fileInfo.name}</Text>
+              <Text>Current file name: {fileInfo}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -80,13 +79,19 @@ export const AccessWalletWithKeyStore = () => {
           </View>
         )}
         <AButton
-          onPress={!isKeyStore ? onOpenFile : onUnLockWithKeyStore}
+          onPress={!isKeyStore ? pickerToggle : onUnLockWithKeyStore}
           title={
             !isKeyStore ? I18n.t('openWalletKeyStore') : I18n.t('accessWallet')
           }
         />
         <AButton onPress={goBack} title={I18n.t('accessExitsTitle')} />
       </View>
+      {isOpen && (
+        <DocumentPicker
+          onPick={filename => onOpenFile(filename)}
+          onPress={pickerToggle}
+        />
+      )}
     </SafeAreaView>
   )
 }

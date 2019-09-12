@@ -1,5 +1,10 @@
 import * as ethUtil from 'ethereumjs-util'
-import { createCipheriv, createDecipheriv, createHash, pbkdf2Sync } from 'crypto-browserify'
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  pbkdf2Sync,
+} from 'crypto-browserify'
 import scryptsy from 'scryptsy'
 import { ErrorMsg } from '../constants/error-msg.constant'
 import { v4 } from 'uuid'
@@ -15,9 +20,7 @@ export class Wallet {
   prefix = '0x'
 
   constructor(priv, pub, path, hwType, hwTransport) {
-    this._privBuffer =
-      priv.length === 32 ? priv : new Buffer(priv, 'hex')
-
+    this._privBuffer = priv.length === 32 ? priv : new Buffer(priv, 'hex')
     if (pub) {
       this._pubBuffer = new Buffer(pub, 'hex')
     }
@@ -110,12 +113,12 @@ export class Wallet {
     const bufPwd = new Buffer(password)
     const derivedKey = pbkdf2Sync(bufPwd, bufPwd, 2000, 32, 'sha256').slice(
       0,
-      16,
+      16
     )
     const decipher = createDecipheriv(
       'aes-128-cbc',
       derivedKey,
-      encseed.slice(0, 16),
+      encseed.slice(0, 16)
     )
 
     const seed = Wallet.decipherBuffer(decipher, encseed.slice(16))
@@ -128,17 +131,14 @@ export class Wallet {
     return wallet
   }
 
-  static getDviKey(
-    password,
-    data,
-  ) {
+  static getDviKey(password, data) {
     if (data) {
       if (data.json) {
         return Wallet.getDviKeyFromKeystore(password, data.json)
       }
 
-      if (data.opts) {
-        return Wallet.getDviKeyFromOpts(password, data.opts)
+      if (data.opt) {
+        return Wallet.getDviKeyFromOpts(password, data.opt)
       }
     }
 
@@ -155,7 +155,7 @@ export class Wallet {
           kdfparams.n,
           kdfparams.r,
           kdfparams.p,
-          kdfparams.dklen,
+          kdfparams.dklen
         )
       }
       case 'pbkdf2': {
@@ -169,7 +169,7 @@ export class Wallet {
           new Buffer(kdfparams.salt, 'hex'),
           kdfparams.c,
           kdfparams.dklen,
-          'sha256',
+          'sha256'
         )
       }
       default: {
@@ -179,8 +179,7 @@ export class Wallet {
   }
 
   static async getDviKeyFromOpts(password, opts) {
-    const randomSalt = await Random.randomBytesAsync(32)
-    const salt = opts.salt || randomSalt
+    const salt = opts.salt
     const kdf = opts.kdf || 'scrypt'
     const kdfparams = {
       dklen: opts.dklen || 32,
@@ -196,7 +195,7 @@ export class Wallet {
           salt,
           kdfparams.c,
           kdfparams.dklen,
-          'sha256',
+          'sha256'
         )
       }
       case 'scrypt': {
@@ -209,7 +208,7 @@ export class Wallet {
           kdfparams.n,
           kdfparams.r,
           kdfparams.p,
-          kdfparams.dklen,
+          kdfparams.dklen
         )
       }
       default: {
@@ -330,10 +329,9 @@ export class Wallet {
     }
 
     const derivedKey = await Wallet.getDviKey(password, { json })
-
     const ciphertext = new Buffer(json.crypto.ciphertext, 'hex')
     const mac = ethUtil.keccak256(
-      Buffer.concat([derivedKey.slice(16, 32), ciphertext]),
+      Buffer.concat([derivedKey.slice(16, 32), ciphertext])
     )
 
     if (mac.toString('hex') !== json.crypto.mac) {
@@ -343,15 +341,13 @@ export class Wallet {
     const decipher = createDecipheriv(
       json.crypto.cipher,
       derivedKey.slice(0, 16),
-      new Buffer(json.crypto.cipherparams.iv, 'hex'),
+      new Buffer(json.crypto.cipherparams.iv, 'hex')
     )
     const seed = Wallet.genSeed(decipher, ciphertext)
-
     return new Wallet(seed)
   }
 
   static fromPrivKeyFile(content, password) {
-    console.log('test')
     const json = content ? JSON.parse(content) : {}
 
     if (json.encseed) {
@@ -377,30 +373,40 @@ export class Wallet {
     const randomIv = await Random.randomBytesAsync(16)
     const randomSalt = await Random.randomBytesAsync(32)
 
-    const iv = opts.iv || randomIv
-    const salt = opts.salt || randomSalt
+    const iv = randomIv
+    const salt = randomSalt
     const kdf = opts.kdf || 'scrypt'
     const kdfparams = {
-      dklen: opts.dklen || 32,
+      dklen: 32,
       salt: salt.toString('hex'),
     }
-
-    const derivedKey = await Wallet.getDviKey(password, { opts })
+    kdfparams.n = opts.n
+    kdfparams.r = 8
+    kdfparams.p = 1
+    const opt = {
+      kdf,
+      salt: randomSalt,
+      n: opts.n,
+      r: 8,
+      p: 1,
+      dklen: 32,
+    }
+    const derivedKey = await Wallet.getDviKey(password, { opt })
     const cipher = createCipheriv(
       opts.cipher || 'aes-128-ctr',
       derivedKey.slice(0, 16),
-      iv,
+      iv
     )
     if (!cipher) {
       throw new Error('Unsupported cipher')
     }
 
-    const ciphertext = Buffer.concat([cipher.update(this._privBuffer), cipher.final()])
-    const mac = ethUtil.keccak(
-      Buffer.concat([
-        derivedKey.slice(16, 32),
-        new Buffer(ciphertext.toString(), 'hex'),
-      ]),
+    const ciphertext = Buffer.concat([
+      cipher.update(this._privBuffer),
+      cipher.final(),
+    ])
+    const mac = ethUtil.keccak256(
+      Buffer.concat([derivedKey.slice(16, 32), ciphertext])
     )
 
     const randomUuid = await Random.randomBytesAsync(16)

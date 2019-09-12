@@ -3,14 +3,16 @@ import { Web3Store } from './web3.store'
 import { Wallet } from '../libs/wallet'
 
 export class WalletStore {
-   _wallet
-   account
-   static PRIVATE_KEY = 'PRIVATE_KEY'
+  _wallet
+  account
+  static PRIVATE_KEY = 'PRIVATE_KEY'
 
   set wallet(value) {
     this._wallet = value
-    this.account = Web3Store.default.accounts.privateKeyToAccount(this._wallet.privateKey)
-    WalletStore.persistPrivateKey(this._wallet.privateKey).catch()
+    this.account = Web3Store.default.accounts.privateKeyToAccount(
+      this._wallet.privateKey
+    )
+    WalletStore.persistPrivateKey(this._wallet.privRaw).catch()
   }
 
   get wallet() {
@@ -23,7 +25,9 @@ export class WalletStore {
 
   async init(privateKey) {
     this._wallet = new Wallet(privateKey)
-    this.account = Web3Store.default.accounts.privateKeyToAccount(this._wallet.privateKey)
+    this.account = Web3Store.default.accounts.privateKeyToAccount(
+      this._wallet.privateKey
+    )
     await WalletStore.persistPrivateKey(privateKey)
   }
 

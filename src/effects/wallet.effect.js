@@ -73,33 +73,41 @@ export class WalletEffect {
     )
   }
   static async sendAssetDateRange(data) {
-    const { to, value, asset, start, end } = data
-    const { Decimals, AssetID } = asset
-    const from = WalletStore.default.address
-    const amount = new BigNumber(value, Decimals)
-    const valueString = amount.toString()
-    const startTime = this.getHexDate(this.convertDate(start))
-    const endTime = this.getHexDate(this.convertDate(end))
-    const tx = await Web3Store.default.fsntx.buildAssetToTimeLockTx({
-      asset: AssetID,
-      from,
-      to,
-      start: startTime,
-      end: endTime,
-      value: valueString,
-    })
+    console.log('call to send asset')
+    try {
 
-    tx.from = from
-    tx.chainId = 46688
-    tx.gasPrice = Web3Store.default.gasPrice
+      const { to, value, asset, start, end } = data
+      const { Decimals, AssetID } = asset
+      const from = WalletStore.default.address
+      const amount = new BigNumber(value, Decimals)
+      const valueString = amount.toString()
+      const startTime = this.getHexDate(this.convertDate(start))
+      const endTime = this.getHexDate(this.convertDate(end))
+      const tx = await Web3Store.default.fsntx.buildAssetToTimeLockTx({
+        asset: AssetID,
+        from,
+        to,
+        start: startTime,
+        end: endTime,
+        value: valueString,
+      })
 
-    return await Web3Store.default.fsn.signAndTransmit(
-      tx,
-      WalletStore.default.account.signTransaction
-    )
+      tx.from = from
+      tx.chainId = 46688
+      tx.gasPrice = Web3Store.default.gasPrice
+
+      return await Web3Store.default.fsn.signAndTransmit(
+        tx,
+        WalletStore.default.account.signTransaction
+      )
+
+    }catch (e) {
+      console.log(e)
+    }
   }
 
   static async sendAssetScheduled(data) {
+    console.log('call to scheduled')
     const from = WalletStore.default.address
     const { to, value, asset, start } = data
     const { Decimals, AssetID } = asset

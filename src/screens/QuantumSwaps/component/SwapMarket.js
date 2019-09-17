@@ -20,7 +20,7 @@ import { BigNumber } from '../../../shared/big-number'
 import { AInput } from '../../../../components/AInput'
 import { WalletEffect } from '../../../effects/wallet.effect'
 
-export const SwapMarket = ({data}) => {
+export const SwapMarket = ({ data }) => {
   // declare state
   const [assetSend, setAssetSend] = useState()
   const [assetReceive, setAssetReceive] = useState()
@@ -112,55 +112,104 @@ export const SwapMarket = ({data}) => {
   return (
     <View>
       {!isPick ? (
-        <View style={s.container}>
-          <View>
-            <Text style={s.label}>You Send</Text>
-            <TouchableOpacity
-              onPress={() => onOpenPicker('SEND')}
-              style={s.pickWrapper}
-            >
-              {!assetSend ? (
-                <Text style={s.label}>Please chose coin to send</Text>
-              ) : (
-                <CoinPick data={assetSend} />
+        data.length > 0 ? (
+          <View style={s.container}>
+            <View>
+              <Text style={s.label}>You Send</Text>
+              <TouchableOpacity
+                onPress={() => onOpenPicker('SEND')}
+                style={s.pickWrapper}
+              >
+                {!assetSend ? (
+                  <Text style={s.label}>Please chose coin to send</Text>
+                ) : (
+                  <CoinPick data={assetSend} />
+                )}
+              </TouchableOpacity>
+              {assetSend && (
+                <Text style={s.assetBalance}>
+                  Asset balance :{' '}
+                  {assetSend.Amount /
+                    BigNumber.generateDecimal(assetSend.Decimals)}
+                </Text>
               )}
-            </TouchableOpacity>
-            {assetSend && (
-              <Text style={s.assetBalance}>
-                Asset balance :{' '}
-                {assetSend.Amount /
-                  BigNumber.generateDecimal(assetSend.Decimals)}
-              </Text>
-            )}
-          </View>
+            </View>
 
-          <View>
-            <Text style={s.label}>You Receive</Text>
-            <TouchableOpacity
-              onPress={() => onOpenPicker('TO')}
-              style={s.pickWrapper}
-            >
-              {!assetReceive ? (
-                <Text style={s.label}>Please chose coin to receive </Text>
-              ) : (
-                <CoinPick data={assetReceive} />
-              )}
-            </TouchableOpacity>
-          </View>
-          {assetSend && assetReceive && (
-            <View style={s.form}>
-              <AInput
-                keyboardType={'number-pad'}
-                value={sendValue.toString() || '0'}
-                onChangeText={value => onChangeText('SEND', value)}
-                name={'You Send'}
-              />
-              <AInput
-                value={receiveValue.toString()}
-                onChangeText={value => onChangeText('RECEIVE', value)}
-                name={'You Receive'}
-              />
-              {sendValue > 0 && receiveValue > 0 && (
+            <View>
+              <Text style={s.label}>You Receive</Text>
+              <TouchableOpacity
+                onPress={() => onOpenPicker('TO')}
+                style={s.pickWrapper}
+              >
+                {!assetReceive ? (
+                  <Text style={s.label}>Please chose coin to receive </Text>
+                ) : (
+                  <CoinPick data={assetReceive} />
+                )}
+              </TouchableOpacity>
+            </View>
+            {assetSend && assetReceive && (
+              <View style={s.form}>
+                <AInput
+                  keyboardType={'number-pad'}
+                  value={sendValue.toString() || '0'}
+                  onChangeText={value => onChangeText('SEND', value)}
+                  name={'You Send'}
+                />
+                <AInput
+                  value={receiveValue.toString()}
+                  onChangeText={value => onChangeText('RECEIVE', value)}
+                  name={'You Receive'}
+                />
+                {sendValue > 0 && receiveValue > 0 && (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Text style={s.label}>Swap Rate:</Text>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <TextInput
+                        value={swapRate.toString()}
+                        style={s.swapRate}
+                        keyboardType={'numeric'}
+                        onChangeText={value => onChangeText('SWAPRATE', value)}
+                      />
+                      <Text>
+                        {assetSend.Symbol} : 1 {assetSend.Symbol}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                <AInput
+                  value={numberOfFill.toString()}
+                  onChangeText={value => onChangeText('NUMBEROFFILL', value)}
+                  name={'Number of Fills'}
+                />
+                {sendValue > 0 &&
+                  receiveValue > 0 &&
+                  (numberOfFill > 0 ? (
+                    <Text>
+                      {' '}
+                      {sendValue / numberOfFill}
+                      <Text>
+                        {assetSend.Symbol} : {receiveValue / numberOfFill}
+                        <Text>{assetReceive.Symbol}</Text>
+                      </Text>{' '}
+                    </Text>
+                  ) : (
+                    <Text style={s.redMess}>
+                      * number of fill must be greater than 0
+                    </Text>
+                  ))}
+              </View>
+            )}
+            {sendValue > 0 && receiveValue > 0 && (
+              <View style={{ padding: metrics.padding.base }}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -168,68 +217,25 @@ export const SwapMarket = ({data}) => {
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Text style={s.label}>Swap Rate:</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TextInput
-                      value={swapRate.toString()}
-                      style={s.swapRate}
-                      keyboardType={'numeric'}
-                      onChangeText={value => onChangeText('SWAPRATE', value)}
-                    />
-                    <Text>
-                      {assetSend.Symbol} : 1 {assetSend.Symbol}
-                    </Text>
+                    <Text style={s.label}>AVAILABLE TO </Text>
+                    <Text>{isPublic ? 'wallet addresses' : 'public'}</Text>
                   </View>
+                  <Switch onValueChange={setIsPublic} value={isPublic} />
                 </View>
-              )}
-              <AInput
-                value={numberOfFill.toString()}
-                onChangeText={value => onChangeText('NUMBEROFFILL', value)}
-                name={'Number of Fills'}
-              />
-              {sendValue > 0 &&
-                receiveValue > 0 &&
-                (numberOfFill > 0 ? (
-                  <Text>
-                    {' '}
-                    {sendValue / numberOfFill}
-                    <Text>
-                      {assetSend.Symbol} : {receiveValue / numberOfFill}
-                      <Text>{assetReceive.Symbol}</Text>
-                    </Text>{' '}
-                  </Text>
-                ) : (
-                  <Text style={s.redMess}>
-                    * number of fill must be greater than 0
-                  </Text>
-                ))}
-            </View>
-          )}
-          {sendValue > 0 && receiveValue > 0 && (
-            <View style={{ padding: metrics.padding.base }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={s.label}>AVAILABLE TO </Text>
-                  <Text>{isPublic ? 'wallet addresses' : 'public'}</Text>
-                </View>
-                <Switch onValueChange={setIsPublic} value={isPublic} />
+                {isPublic && (
+                  <AInput
+                    value={addresses}
+                    onChangeText={text => setAddresses(text)}
+                    name={'Address'}
+                  />
+                )}
               </View>
-              {isPublic && (
-                <AInput
-                  value={addresses}
-                  onChangeText={text => setAddresses(text)}
-                  name={'Address'}
-                />
-              )}
-            </View>
-          )}
-        </View>
+            )}
+          </View>
+        ) : (
+          <Text>Don't have any asset</Text>
+        )
       ) : (
         data && <AssetPicker onPress={item => onPickCoin(item)} data={data} />
       )}

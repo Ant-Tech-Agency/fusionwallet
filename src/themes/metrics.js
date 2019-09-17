@@ -58,7 +58,7 @@ export const metrics = {
       base: 5,
       double: 10,
       triple: 15,
-      circle : 50
+      circle: 50,
     },
     width: {
       base: 0.3,
@@ -69,5 +69,8 @@ export const metrics = {
   coinLogo: {
     width: 48,
     height: 48,
+  },
+  modal: {
+    width: (width * 95) / 100,
   },
 }

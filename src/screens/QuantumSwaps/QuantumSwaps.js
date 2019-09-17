@@ -12,13 +12,12 @@ import {
 import { colors, images, metrics } from '../../themes'
 import { SwapMarket } from './component/SwapMarket'
 import { useNavigationParam } from 'react-navigation-hooks'
-import { AvailableSwaps } from './component/AvailableSwaps'
+import { MyOpenSwap } from './component/MyOpenSwap'
 
 export const QuantumSwaps = () => {
   const [assetData, setAssetData] = useState(useNavigationParam('data'))
   const [swapsData, setSwapsData] = useState(useNavigationParam('swaps'))
   const [segment, setSegment] = useState(0)
-  console.log(swapsData)
 
   function onClickSegment(segment) {
     setSegment(segment)
@@ -26,8 +25,8 @@ export const QuantumSwaps = () => {
 
   return (
     <SafeAreaView style={s.wrapper}>
-      <ScrollView>
-        <KeyboardAvoidingView style={s.container}>
+      <KeyboardAvoidingView behavior={'position'} style={s.container}>
+        <ScrollView style={s.content}>
           <Image source={images.logo} style={s.logo} />
 
           <View style={s.segment}>
@@ -37,7 +36,7 @@ export const QuantumSwaps = () => {
               }
               onPress={() => onClickSegment(0)}
             >
-              <Text style={s.titleScreen}>Swap Market</Text>
+              <Text style={s.titleScreen}>Make Swap</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={
@@ -46,26 +45,38 @@ export const QuantumSwaps = () => {
               onPress={() => onClickSegment(1)}
             >
               <Text style={s.titleScreen}>
-                My Open Swap( {swapsData.length} )
+                My Open Swap({swapsData.length})
               </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={
+                segment === 2 ? s.segmentItemActive : s.segmentItemDeActive
+              }
+              onPress={() => onClickSegment(2)}
+            >
+              <Text style={s.titleScreen}>Market</Text>
             </TouchableOpacity>
           </View>
 
           {segment === 0 && <SwapMarket data={assetData} />}
-          {segment === 1 &&
-            swapsData.length > 0 &&
-            swapsData.map((e, i) => {
-              return (
-                <AvailableSwaps
-                  key={i.toString()}
-                  onRecall={() => {
-                    console.log('ahihi')
-                  }}
-                />
-              )
-            })}
-        </KeyboardAvoidingView>
-      </ScrollView>
+          {segment === 1 && (
+            <View style={{ flex: 1 }}>
+              {swapsData.length > 0 ? (
+                swapsData.map((e, i) => {
+                  return (
+                    <MyOpenSwap
+                      key={i.toString()}
+                      swap={e}
+                    />
+                  )
+                })
+              ) : (
+                <Text style={s.noOpen}>NO OPEN SWAPS</Text>
+              )}
+            </View>
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
@@ -78,6 +89,10 @@ const s = StyleSheet.create({
   container: {
     flex: 1,
     marginBottom: metrics.margin.base,
+  },
+  content: {
+    width: '100%',
+    height: '100%',
   },
   logo: {
     height: metrics.logo.height,
@@ -110,4 +125,7 @@ const s = StyleSheet.create({
     padding: metrics.padding.base,
     borderBottomWidth: metrics.border.width.base,
   },
+  noOpen:{
+    alignSelf:'center'
+  }
 })

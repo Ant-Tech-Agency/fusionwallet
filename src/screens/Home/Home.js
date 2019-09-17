@@ -46,7 +46,7 @@ export const Home = () => {
   const [timeLockType, setTimeLockType] = useState()
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
-  const [swapsList, setSwapsList] = useState([])
+  const [swapsList, setSwapsList] = useState(null)
 
   useAsyncEffect(
     async () => {
@@ -62,22 +62,11 @@ export const Home = () => {
     []
   )
 
-
-  useEffect(() => {
-    getSwaps()
-  }, [])
-
-  async function getSwaps() {
-    let res = await AssetEffect.getAvailableSwaps(WalletStore.default.address)
-    setSwapsList(res)
-  }
-
   async function init() {
     try {
       setLoading(true)
 
       const balances = await WalletEffect.getAllBalances()
-
       const assets = await AssetEffect.getAllAssets()
 
       const balance = balances[WalletConstant.FsnTokenAddress] || 0
@@ -85,6 +74,12 @@ export const Home = () => {
 
       const userAssets = AssetEffect.getAssetsFromBalances(assets, balances)
       setAssets(userAssets)
+
+      let res = await AssetEffect.getAvailableSwaps(
+        WalletStore.default.address,
+        assets
+      )
+      setSwapsList(res)
     } catch (e) {
       return e
     } finally {
@@ -200,17 +195,14 @@ export const Home = () => {
 
           <View style={s.wrapInput}>
             <Text style={s.titleFeature}> Quantum Swaps </Text>
-            {
-              assets.length > 0 && swapsList.length > 0 ?
-              (
+            {assets && swapsList ? (
               <AButton
                 title={'Quantum Swaps'}
                 onPress={() =>
                   navigate('QuantumSwaps', { data: assets, swaps: swapsList })
                 }
               />
-            ) :
-              (
+            ) : (
               <ActivityIndicator size={'large'} color={'tomato'} />
             )}
           </View>

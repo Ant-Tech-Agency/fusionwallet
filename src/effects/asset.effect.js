@@ -1,4 +1,11 @@
-import { getAllAvailableSwaps, getAssets, getFsnPrice } from '../services/fusion.service'
+import {
+  getAllAvailableSwaps,
+  getAssets,
+  getFsnPrice,
+} from '../services/fusion.service'
+import { WalletStore } from '../stores/wallet.store'
+import { Web3Store } from '../stores/web3.store'
+import { WalletConstant } from '../constants/wallet.constant'
 
 // import { sortBy } from 'lodash/fp'
 async function getAllAssets() {
@@ -42,23 +49,72 @@ function getAssetsFromBalances(assets, balances) {
   }, [])
 }
 
-async function getAvailableSwaps(pubAddress) {
+function countAmountDec(decimals) {
+  let returnDecimals = '1'
+  for (let i = 0; i < decimals; i++) {
+    returnDecimals += '0'
+  }
+  return parseInt(returnDecimals)
+}
+
+async function getAvailableSwaps(pubAddress, allAsset) {
   const res = await getAllAvailableSwaps(pubAddress)
   const preSwaps = res.data
   const swaps = []
   preSwaps.pop()
-  preSwaps.forEach((e) => {
+  preSwaps.forEach(e => {
     if (e) {
-      const element ={}
-      element[e.swapID] = JSON.parse(e.data)
-      element[e.swapID].size = e.size
+      const data = JSON.parse(e.data)
+      const fromAsset = allAsset[e.fromAsset]
+      const toAsset = allAsset[e.toAsset]
+
+      const fromAmount =
+        (data.MinFromAmount / countAmountDec(fromAsset.Decimals)) * e.size
+      const toAmount =
+        (data.MinToAmount / countAmountDec(toAsset.Decimals)) * e.size
+      const swapRate = fromAmount / toAmount
+      const minimumFill = fromAmount / e.size
+      const fromSymbol = fromAsset.Symbol
+      const toSymbol = toAsset.Symbol
+      const ui = {
+        fromAmount,
+        fromSymbol,
+        toSymbol,
+        toAmount,
+        swapRate,
+        minimumFill,
+      }
+      const element = {
+        ...data,
+        size : e.size,
+        ui: ui
+      }
       swaps.push(element)
     }
   })
   return swaps
 }
+
+async function recallSwap(SwapID){
+  const from = WalletStore.default.address
+  const data = {
+    from,
+    SwapID
+  }
+
+  const tx = await Web3Store.default.fsntx.buildRecallSwapTx(data)
+  tx.from = from
+  tx.chainId = WalletConstant.ChainID
+  console.log(tx)
+  return Web3Store.default.fsn.signAndTransmit(
+    tx,
+    WalletStore.default.account.signTransaction
+  )
+
+}
 export const AssetEffect = {
   getAllAssets,
   getAssetsFromBalances,
   getAvailableSwaps,
+  recallSwap
 }

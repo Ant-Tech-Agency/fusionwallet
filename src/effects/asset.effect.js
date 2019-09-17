@@ -1,4 +1,4 @@
-import { getAssets, getFsnPrice } from '../services/fusion.service'
+import { getAllAvailableSwaps, getAssets, getFsnPrice } from '../services/fusion.service'
 
 // import { sortBy } from 'lodash/fp'
 async function getAllAssets() {
@@ -32,7 +32,9 @@ async function getAllAssets() {
 }
 
 function getAssetsFromBalances(assets, balances) {
-  delete balances['0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']
+  delete balances[
+    '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+  ]
   return Object.keys(balances).reduce((acc, key) => {
     const asset = assets[key]
     asset.Amount = balances[key]
@@ -40,7 +42,23 @@ function getAssetsFromBalances(assets, balances) {
   }, [])
 }
 
+async function getAvailableSwaps(pubAddress) {
+  const res = await getAllAvailableSwaps(pubAddress)
+  const preSwaps = res.data
+  const swaps = []
+  preSwaps.pop()
+  preSwaps.forEach((e) => {
+    if (e) {
+      const element ={}
+      element[e.swapID] = JSON.parse(e.data)
+      element[e.swapID].size = e.size
+      swaps.push(element)
+    }
+  })
+  return swaps
+}
 export const AssetEffect = {
   getAllAssets,
   getAssetsFromBalances,
+  getAvailableSwaps,
 }

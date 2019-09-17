@@ -8,24 +8,24 @@ import {
   StyleSheet,
   Switch,
   Text,
-  View
-} from "react-native"
-import React, { useState } from "react"
-import { useNavigation } from "react-navigation-hooks"
-import { colors, images, metrics } from "../../themes"
-import { AButton } from "../../../components/AButton"
-import I18n from "../../i18n"
-import { AssetData } from "web3-fusion-extend"
-import { AssetItem } from "./components"
-import { AInput } from "../../../components/AInput"
-import { BigNumber } from "../../shared/big-number"
-import { WalletConstant } from "../../constants/wallet.constant"
-import { useAsyncEffect } from "use-async-effect"
-import { WalletEffect } from "../../effects/wallet.effect"
-import { AssetEffect } from "../../effects/asset.effect"
-import { WalletStore } from "../../stores/wallet.store"
-import { TimeLock } from "./components/TimeLock"
-import { TxType } from "../../constants/tx-type.constant"
+  View,
+} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useNavigation } from 'react-navigation-hooks'
+import { colors, images, metrics } from '../../themes'
+import { AButton } from '../../../components/AButton'
+import I18n from '../../i18n'
+import { AssetData } from 'web3-fusion-extend'
+import { AssetItem } from './components'
+import { AInput } from '../../../components/AInput'
+import { BigNumber } from '../../shared/big-number'
+import { WalletConstant } from '../../constants/wallet.constant'
+import { useAsyncEffect } from 'use-async-effect'
+import { WalletEffect } from '../../effects/wallet.effect'
+import { AssetEffect } from '../../effects/asset.effect'
+import { WalletStore } from '../../stores/wallet.store'
+import { TimeLock } from './components/TimeLock'
+import { TxType } from '../../constants/tx-type.constant'
 
 export const Home = () => {
   const { navigate } = useNavigation()
@@ -46,13 +46,14 @@ export const Home = () => {
   const [timeLockType, setTimeLockType] = useState()
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
+  const [swapsList, setSwapsList] = useState([])
 
   useAsyncEffect(
-     async () => {
-       await init()
+    async () => {
+      await init()
 
-      return setInterval( async () => {
-        await  init()
+      return setInterval(async () => {
+        await init()
       }, 30000)
     },
     timer => {
@@ -60,6 +61,16 @@ export const Home = () => {
     },
     []
   )
+
+
+  useEffect(() => {
+    getSwaps()
+  }, [])
+
+  async function getSwaps() {
+    let res = await AssetEffect.getAvailableSwaps(WalletStore.default.address)
+    setSwapsList(res)
+  }
 
   async function init() {
     try {
@@ -72,10 +83,7 @@ export const Home = () => {
       const balance = balances[WalletConstant.FsnTokenAddress] || 0
       setBalance(balance / BigNumber.generateDecimal(18))
 
-      const userAssets = AssetEffect.getAssetsFromBalances(
-        assets,
-        balances
-      )
+      const userAssets = AssetEffect.getAssetsFromBalances(assets, balances)
       setAssets(userAssets)
     } catch (e) {
       return e
@@ -158,7 +166,6 @@ export const Home = () => {
 
       await init()
 
-
       setPickedAsset(null)
       setQuantity('')
 
@@ -191,19 +198,22 @@ export const Home = () => {
             </View>
           </View>
 
-
           <View style={s.wrapInput}>
             <Text style={s.titleFeature}> Quantum Swaps </Text>
-            {assets.length > 0 ? (
+            {
+              assets.length > 0 && swapsList.length > 0 ?
+              (
               <AButton
                 title={'Quantum Swaps'}
-                onPress={() => navigate('QuantumSwaps', { data: assets })}
+                onPress={() =>
+                  navigate('QuantumSwaps', { data: assets, swaps: swapsList })
+                }
               />
-            ) : (
+            ) :
+              (
               <ActivityIndicator size={'large'} color={'tomato'} />
             )}
           </View>
-
 
           <View style={s.wrapInput}>
             <Text style={s.titleFeature}>{I18n.t('assetCreation')}</Text>

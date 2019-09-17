@@ -12,6 +12,7 @@ async function getAllAssets() {
     }
 
     const resAssets = await Promise.all(promises)
+    console.log(resAssets)
     for (let i = 0; i < resAssets.length; i++) {
       const assets = resAssets[i].data
       assets.forEach(asset => {

@@ -1,8 +1,9 @@
 # Expo - Fusion Wallet
 
-**1. Table of Content**
+**Table of Content**
 
-- [Introduce React-Native - Expo - Snack](./docs/mobile/README.md)
-- Main library on project
-- Project structure
-- Let code
+- [Introduce React-Native - Expo - Snack][intro]
+- [Basic function on project][basic]
+
+[intro]: ./docs/mobile/README.md
+[basic]: ./docs/web3/README.md

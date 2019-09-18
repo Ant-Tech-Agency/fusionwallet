@@ -2,8 +2,11 @@ import React, { useState } from 'react'
 import { View, StyleSheet, Button, Text, Modal } from 'react-native'
 import { metrics } from '../../../themes'
 import { AssetEffect } from '../../../effects/asset.effect'
-export const MyOpenSwap = ({ swap }) => {
+export const MyOpenSwap = ({ swap, segment }) => {
+  // declare UI object and swapID
   const { ui, SwapID } = swap
+
+  // get necessary value from UI object
   const {
     fromAmount,
     fromSymbol,
@@ -12,10 +15,28 @@ export const MyOpenSwap = ({ swap }) => {
     swapRate,
     minimumFill,
   } = ui
+
+  // declare state
+  // isVisible state using to check should modal render or not
   const [isVisible, setIsVisible] = useState(false)
+
+  // declare function
+  // onRecall was called when user press recall button in confirm modal
   async function onRecall() {
+    // close modal and start transaction
+    try {
+      setIsVisible(false)
+      const txHash = await AssetEffect.recallSwap(SwapID)
+      alert(txHash)
+    } catch (e) {
+      alert(e)
+      console.log(e)
+    }
+  }
+
+  async function takeSwap() {
     setIsVisible(false)
-    const txHash = await AssetEffect.recallSwap(SwapID)
+    const txHash = await AssetEffect.takeSwap(SwapID)
     alert(txHash)
   }
 
@@ -25,8 +46,12 @@ export const MyOpenSwap = ({ swap }) => {
         <View>
           <Text>
             {' '}
-            <Text style={s.contentTitle}>Price: </Text> {swapRate} {fromSymbol}{' '}
-            : 1 {toSymbol}
+            <Text style={s.contentTitle}>Price: </Text>{' '}
+            {// check is swapRate content '.'
+            swapRate.toString().indexOf('.') !== -1
+              ? swapRate.toFixed(4)
+              : swapRate}{' '}
+            {fromSymbol} : 1 {toSymbol}
           </Text>
           <Text>
             {' '}
@@ -43,9 +68,14 @@ export const MyOpenSwap = ({ swap }) => {
           </Text>
         </View>
         <View>
-          <Button onPress={() => setIsVisible(true)} title={'Recall'} />
+          <Button
+            onPress={() => (segment !== 2 ? setIsVisible(true) : takeSwap())}
+            title={segment !== 2 ? 'Recall' : 'TakeSwap'}
+          />
         </View>
       </View>
+
+      {/*confirm reCall swap modal*/}
       <Modal animationType={'slide'} transparent={true} visible={isVisible}>
         <View
           style={{
@@ -67,12 +97,13 @@ export const MyOpenSwap = ({ swap }) => {
               Are you sure you want to remove this swap? If recalled, this swap
               will be pulled from the swap market with the next block.
             </Text>
-            <View style={{
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexDirection: 'row',
-
-            }}>
+            <View
+              style={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}
+            >
               <Button onPress={() => setIsVisible(false)} title={'Cancel'} />
               <Button
                 color={'red'}

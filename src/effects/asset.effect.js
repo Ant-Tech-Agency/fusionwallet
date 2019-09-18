@@ -1,8 +1,4 @@
-import {
-  getAllAvailableSwaps,
-  getAssets,
-  getFsnPrice,
-} from '../services/fusion.service'
+import { getOpenSwap, getAssets, getFsnPrice } from '../services/fusion.service'
 import { WalletStore } from '../stores/wallet.store'
 import { Web3Store } from '../stores/web3.store'
 import { WalletConstant } from '../constants/wallet.constant'
@@ -10,7 +6,32 @@ import { WalletConstant } from '../constants/wallet.constant'
 // import { sortBy } from 'lodash/fp'
 async function getAllAssets() {
   try {
-    const cachedAssets = {}
+    const cachedAssets = {
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff': {
+        AssetID:
+          '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        CanChange: false,
+        Decimals: 18,
+        Description: '',
+        ID:
+          '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        Name: 'FUSION',
+        Symbol: 'FSN',
+        Total: 81920000000000000000000000,
+      },
+      '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe': {
+        AssetID:
+          '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe',
+        CanChange: false,
+        Decimals: 0,
+        Description: '',
+        ID:
+          '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe',
+        Name: 'USAN',
+        Symbol: '',
+        Total: 0,
+      },
+    }
     const resFsn = await getFsnPrice()
     const totalAssets = resFsn.data.totalAssets
     const promises = []
@@ -39,9 +60,6 @@ async function getAllAssets() {
 }
 
 function getAssetsFromBalances(assets, balances) {
-  delete balances[
-    '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-  ]
   return Object.keys(balances).reduce((acc, key) => {
     const asset = assets[key]
     asset.Amount = balances[key]
@@ -57,9 +75,8 @@ function countAmountDec(decimals) {
   return parseInt(returnDecimals)
 }
 
-async function getAvailableSwaps(pubAddress, allAsset) {
-  const res = await getAllAvailableSwaps(pubAddress)
-  const preSwaps = res.data
+async function getAvailableSwaps(swap, allAsset) {
+  const preSwaps = swap.data
   const swaps = []
   preSwaps.pop()
   preSwaps.forEach(e => {
@@ -67,7 +84,6 @@ async function getAvailableSwaps(pubAddress, allAsset) {
       const data = JSON.parse(e.data)
       const fromAsset = allAsset[e.fromAsset]
       const toAsset = allAsset[e.toAsset]
-
       const fromAmount =
         (data.MinFromAmount / countAmountDec(fromAsset.Decimals)) * e.size
       const toAmount =
@@ -86,8 +102,8 @@ async function getAvailableSwaps(pubAddress, allAsset) {
       }
       const element = {
         ...data,
-        size : e.size,
-        ui: ui
+        size: e.size,
+        ui: ui,
       }
       swaps.push(element)
     }
@@ -95,13 +111,12 @@ async function getAvailableSwaps(pubAddress, allAsset) {
   return swaps
 }
 
-async function recallSwap(SwapID){
+async function recallSwap(SwapID) {
   const from = WalletStore.default.address
   const data = {
     from,
-    SwapID
+    SwapID,
   }
-
   const tx = await Web3Store.default.fsntx.buildRecallSwapTx(data)
   tx.from = from
   tx.chainId = WalletConstant.ChainID
@@ -110,11 +125,30 @@ async function recallSwap(SwapID){
     tx,
     WalletStore.default.account.signTransaction
   )
-
+}
+async function takeSwap(SwapID) {
+  try {
+    const from = WalletStore.default.address
+    const data = {
+      from,
+      SwapID,
+      Size: 1,
+    }
+    const tx = await Web3Store.default.fsntx.buildTakeSwapTx(data)
+    tx.from = from
+    tx.chainId = WalletConstant.ChainID
+    return Web3Store.default.fsn.signAndTransmit(
+      tx,
+      WalletStore.default.account.signTransaction
+    )
+  } catch (e) {
+    throw e.message
+  }
 }
 export const AssetEffect = {
   getAllAssets,
   getAssetsFromBalances,
   getAvailableSwaps,
-  recallSwap
+  recallSwap,
+  takeSwap,
 }

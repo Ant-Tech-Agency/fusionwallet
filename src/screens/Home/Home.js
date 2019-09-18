@@ -26,6 +26,7 @@ import { AssetEffect } from '../../effects/asset.effect'
 import { WalletStore } from '../../stores/wallet.store'
 import { TimeLock } from './components/TimeLock'
 import { TxType } from '../../constants/tx-type.constant'
+import { getAllSwaps, getOpenSwap } from '../../services/fusion.service'
 
 export const Home = () => {
   const { navigate } = useNavigation()
@@ -47,7 +48,7 @@ export const Home = () => {
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
   const [swapsList, setSwapsList] = useState(null)
-
+  const [allAsset, setAllAsset] = useState([])
   useAsyncEffect(
     async () => {
       await init()
@@ -67,19 +68,22 @@ export const Home = () => {
       setLoading(true)
 
       const balances = await WalletEffect.getAllBalances()
+
       const assets = await AssetEffect.getAllAssets()
 
       const balance = balances[WalletConstant.FsnTokenAddress] || 0
       setBalance(balance / BigNumber.generateDecimal(18))
-
       const userAssets = AssetEffect.getAssetsFromBalances(assets, balances)
       setAssets(userAssets)
-
-      let res = await AssetEffect.getAvailableSwaps(
-        WalletStore.default.address,
+      let res = await getOpenSwap(
+        WalletStore.default.address
+      )
+      let swap = await AssetEffect.getAvailableSwaps(
+        res,
         assets
       )
-      setSwapsList(res)
+      setAllAsset(assets)
+      setSwapsList(swap)
     } catch (e) {
       return e
     } finally {
@@ -199,7 +203,11 @@ export const Home = () => {
               <AButton
                 title={'Quantum Swaps'}
                 onPress={() =>
-                  navigate('QuantumSwaps', { data: assets, swaps: swapsList })
+                  navigate('QuantumSwaps', {
+                    data: assets,
+                    swaps: swapsList,
+                    allAsset : allAsset
+                  })
                 }
               />
             ) : (

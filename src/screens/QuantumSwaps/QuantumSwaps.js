@@ -56,7 +56,6 @@ export const QuantumSwaps = () => {
 
   // init using to get all swap
   async function init() {
-
     if (page <= maxPage) {
       const res = await getAllSwaps(page)
       if (page === 0) {
@@ -122,7 +121,11 @@ export const QuantumSwaps = () => {
 
   return (
     <SafeAreaView style={s.wrapper}>
-      <KeyboardAvoidingView enabled={segment === 2 && false} behavior={'position'} style={s.container}>
+      <KeyboardAvoidingView
+        enabled={segment !== 2}
+        behavior={'position'}
+        style={s.container}
+      >
         <ScrollView
           scrollEventThrottle={400}
           showsVerticalScrollIndicator={false}

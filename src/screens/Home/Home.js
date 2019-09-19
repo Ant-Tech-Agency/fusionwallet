@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'react-navigation-hooks'
 import { colors, images, metrics } from '../../themes'
 import { AButton } from '../../../components/AButton'
@@ -26,6 +26,7 @@ import { AssetEffect } from '../../effects/asset.effect'
 import { WalletStore } from '../../stores/wallet.store'
 import { TimeLock } from './components/TimeLock'
 import { TxType } from '../../constants/tx-type.constant'
+import { getAllSwaps, getOpenSwap } from '../../services/fusion.service'
 
 export const Home = () => {
   const { navigate } = useNavigation()
@@ -46,7 +47,9 @@ export const Home = () => {
   const [timeLockType, setTimeLockType] = useState()
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
-
+  const [swapsList, setSwapsList] = useState(null)
+  const [allAsset, setAllAsset] = useState([])
+  const [balances, setBalances] = useState({})
   useAsyncEffect(
     async () => {
       await init()
@@ -66,14 +69,17 @@ export const Home = () => {
       setLoading(true)
 
       const balances = await WalletEffect.getAllBalances()
-
+      setBalances(balances)
       const assets = await AssetEffect.getAllAssets()
 
       const balance = balances[WalletConstant.FsnTokenAddress] || 0
       setBalance(balance / BigNumber.generateDecimal(18))
-
       const userAssets = AssetEffect.getAssetsFromBalances(assets, balances)
       setAssets(userAssets)
+      let res = await getOpenSwap(WalletStore.default.address)
+      let swap = await AssetEffect.getAvailableSwaps(res, assets)
+      setAllAsset(assets)
+      setSwapsList(swap)
     } catch (e) {
       return e
     } finally {
@@ -188,17 +194,24 @@ export const Home = () => {
             </View>
           </View>
 
-          {/*<View style={s.wrapInput}>*/}
-          {/*  <Text style={s.titleFeature}> Quantum Swaps </Text>*/}
-          {/*  {assets.length > 0 ? (*/}
-          {/*    <AButton*/}
-          {/*      title={'Quantum Swaps'}*/}
-          {/*      onPress={() => navigate('QuantumSwaps', { data: assets })}*/}
-          {/*    />*/}
-          {/*  ) : (*/}
-          {/*    <ActivityIndicator size={'large'} color={'tomato'} />*/}
-          {/*  )}*/}
-          {/*</View>*/}
+          <View style={s.wrapInput}>
+            <Text style={s.titleFeature}> Quantum Swaps </Text>
+            {assets && swapsList ? (
+              <AButton
+                title={'Quantum Swaps'}
+                onPress={() =>
+                  navigate('QuantumSwaps', {
+                    data: assets,
+                    swaps: swapsList,
+                    allAsset: allAsset,
+                    balances
+                  })
+                }
+              />
+            ) : (
+              <ActivityIndicator size={'large'} color={'tomato'} />
+            )}
+          </View>
 
           <View style={s.wrapInput}>
             <Text style={s.titleFeature}>{I18n.t('assetCreation')}</Text>

@@ -7,12 +7,13 @@ import { Home } from '../screens/Home/Home'
 import { AccessWallet } from '../screens/AccessWallet/AccessWallet'
 import { Loading } from '../screens/Loading/Loading'
 import { CreateNewWallet } from '../screens/CreateNewWallet/CreateNewWallet'
-import { AccessWalletWithKeyStore } from '../screens/AccessWalletWithKeyStore/AccessWalletWithKeyStore'
-// import { QuantumSwaps } from '@/screens/QuantumSwaps/QuantumSwaps'
+import { OpenWalletWithJSON } from '../screens/OpenWalletWithJSON/OpenWalletWithJSON'
+import { QuantumSwaps } from '../screens/QuantumSwaps/QuantumSwaps'
 
 export const PublicStack = createStackNavigator(
   {
     Home,
+    QuantumSwaps
   },
   {
     initialRouteName: 'Home',
@@ -24,7 +25,7 @@ export const PrivateStack = createStackNavigator(
   {
     AccessWallet,
     CreateNewWallet,
-    AccessWalletWithKeyStore,
+    AccessWalletWithKeyStore: OpenWalletWithJSON,
   },
   {
     initialRouteName: 'AccessWallet',

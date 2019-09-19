@@ -17,9 +17,9 @@ import { colors, images, metrics } from '../../themes'
 import I18n from '../../i18n'
 import { AButton } from '../../../components/AButton'
 import { DocumentPicker } from './component/DocumentPicker'
-import { PATH } from '../../constants/FilePath'
+import { PATH, ROOT } from '../../constants/FilePath'
 
-export const AccessWalletWithKeyStore = () => {
+export const OpenWalletWithJSON = () => {
   const { goBack, navigate } = useNavigation()
   const [password, setPassword] = useState('123456789')
   const [fileInfo, setFileInfo] = useState(null)
@@ -32,11 +32,15 @@ export const AccessWalletWithKeyStore = () => {
   }
 
   async function onOpenFile(fileName) {
-    const fileContent = await FS.readAsStringAsync(PATH + fileName)
-    setFileContent(fileContent)
-    setIsKeyStore(true)
-    setFileInfo(fileName)
-    pickerToggle()
+    try {
+      const fileContent = await FS.readAsStringAsync(PATH + ROOT + fileName)
+      setFileContent(fileContent)
+      setIsKeyStore(true)
+      setFileInfo(fileName)
+      pickerToggle()
+    }catch (e) {
+      console.log(e)
+    }
   }
 
   async function onUnLockWithKeyStore() {
@@ -59,7 +63,7 @@ export const AccessWalletWithKeyStore = () => {
       <Text style={s.title}>{I18n.t('accessExitsTitle')}</Text>
       <View style={s.content}>
         {fileInfo && (
-          <TouchableOpacity onPress={onOpenFile} style={s.fileHandler}>
+          <TouchableOpacity onPress={pickerToggle} style={s.fileHandler}>
             <View style={s.fileHandlerContent}>
               <Text>Current file name: {fileInfo}</Text>
             </View>
@@ -132,14 +136,12 @@ const s = StyleSheet.create({
   },
   fileHandlerContent: {
     alignSelf: 'center',
-    width: '100%%',
     padding: metrics.padding.base,
     backgroundColor: colors.border.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   input: {
-    width: '100%',
     fontSize: metrics.font.text.t1,
     textAlign: 'center',
   },

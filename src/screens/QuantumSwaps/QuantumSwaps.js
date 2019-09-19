@@ -122,7 +122,7 @@ export const QuantumSwaps = () => {
 
   return (
     <SafeAreaView style={s.wrapper}>
-      <KeyboardAvoidingView behavior={'position'} style={s.container}>
+      <KeyboardAvoidingView enabled={segment === 2 && false} behavior={'position'} style={s.container}>
         <ScrollView
           scrollEventThrottle={400}
           showsVerticalScrollIndicator={false}

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button, FlatList } from 'react-native'
 import { getAllSwaps } from '../../../services/fusion.service'
 import { AssetEffect } from '../../../effects/asset.effect'
 import { MyOpenSwap } from './MyOpenSwap'
+import { AvailableSwap } from './AvailableSwaps'
 export const SwapTaker = ({ allAsset }) => {
   // declare state
   // page using to call api
@@ -17,7 +18,6 @@ export const SwapTaker = ({ allAsset }) => {
   async function init() {
     const res = await getAllSwaps(page)
     const swaps = await AssetEffect.getAvailableSwaps(res, allAsset)
-    console.log(swaps)
     setAllSwap(swaps)
   }
 
@@ -28,7 +28,7 @@ export const SwapTaker = ({ allAsset }) => {
           data={allSwap}
           keyExtractor={item => item.SwapID}
           renderItem={({ item }) => {
-            return <MyOpenSwap  swap={item} />
+            return <AvailableSwap  swap={item} />
           }}
         />
       )}

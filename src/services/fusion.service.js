@@ -13,7 +13,7 @@ export const getOpenSwap = async (publicAddress) => {
 }
 
 export const getAllSwaps = async (page, options) => {
-  let base = `swaps2/all?page=${page}&size=30&sort=asc`
+  let base = `/swaps2/all?page=${page}&size=30&sort=asc`
   if (options){
     const {from, to} = options
     if (from){
@@ -23,6 +23,11 @@ export const getAllSwaps = async (page, options) => {
       base += '&fromAsset=' + to
     }
   }
+  return await api.get(base)
+}
 
+export const getSwapsSearch = async (options) =>{
+  const {type, assetID} = options
+  const base = `/swaps2/all?page=0&size=30&sort=asc&${type}=${assetID}`
   return await api.get(base)
 }

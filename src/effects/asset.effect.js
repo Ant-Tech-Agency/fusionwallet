@@ -2,8 +2,6 @@ import { getOpenSwap, getAssets, getFsnPrice } from '../services/fusion.service'
 import { WalletStore } from '../stores/wallet.store'
 import { Web3Store } from '../stores/web3.store'
 import { WalletConstant } from '../constants/wallet.constant'
-
-// import { sortBy } from 'lodash/fp'
 async function getAllAssets() {
   try {
     const cachedAssets = {
@@ -28,7 +26,7 @@ async function getAllAssets() {
         ID:
           '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe',
         Name: 'USAN',
-        Symbol: '',
+        Symbol: 'USAN',
         Total: 0,
       },
     }
@@ -75,12 +73,13 @@ function countAmountDec(decimals) {
   return parseInt(returnDecimals)
 }
 
-async function getAvailableSwaps(swap, allAsset) {
+async function getAvailableSwaps(swap, allAsset, balances) {
   const preSwaps = swap.data
   const swaps = []
   preSwaps.pop()
   preSwaps.forEach(e => {
     if (e) {
+      let isTake;
       const data = JSON.parse(e.data)
       const fromAsset = allAsset[e.fromAsset]
       const toAsset = allAsset[e.toAsset]
@@ -92,6 +91,9 @@ async function getAvailableSwaps(swap, allAsset) {
       const minimumFill = fromAmount / e.size
       const fromSymbol = fromAsset.Symbol
       const toSymbol = toAsset.Symbol
+      if (balances){
+        isTake = isTakeAvailable(data.ToAssetID, toAmount, data.ToStartTime, data.ToEndTime, balances)
+      }
       const ui = {
         fromAmount,
         fromSymbol,
@@ -99,6 +101,7 @@ async function getAvailableSwaps(swap, allAsset) {
         toAmount,
         swapRate,
         minimumFill,
+        isTake
       }
       const element = {
         ...data,
@@ -120,31 +123,42 @@ async function recallSwap(SwapID) {
   const tx = await Web3Store.default.fsntx.buildRecallSwapTx(data)
   tx.from = from
   tx.chainId = WalletConstant.ChainID
-  console.log(tx)
   return Web3Store.default.fsn.signAndTransmit(
     tx,
     WalletStore.default.account.signTransaction
   )
 }
+
 async function takeSwap(SwapID) {
-  try {
-    const from = WalletStore.default.address
-    const data = {
-      from,
-      SwapID,
-      Size: 1,
-    }
-    const tx = await Web3Store.default.fsntx.buildTakeSwapTx(data)
-    tx.from = from
-    tx.chainId = WalletConstant.ChainID
-    return Web3Store.default.fsn.signAndTransmit(
-      tx,
-      WalletStore.default.account.signTransaction
-    )
-  } catch (e) {
-    throw e.message
+  const from = WalletStore.default.address
+  const data = {
+    from,
+    SwapID,
+    Size: 1,
+  }
+  const tx = await Web3Store.default.fsntx.buildTakeSwapTx(data)
+  tx.from = from
+  tx.chainId = WalletConstant.ChainID
+  return Web3Store.default.fsn.signAndTransmit(
+    tx,
+    WalletStore.default.account.signTransaction
+  )
+}
+
+ function isTakeAvailable(
+  assetId,
+  minSwapTaker,
+  toStartTime,
+  toEndTime,
+  balances
+) {
+   if (toStartTime === 0 && toEndTime === 18446744073709552000) {
+    return balances[assetId] > minSwapTaker
+  } else {
+    return false
   }
 }
+
 export const AssetEffect = {
   getAllAssets,
   getAssetsFromBalances,

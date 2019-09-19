@@ -49,6 +49,7 @@ export const Home = () => {
   const [toDate, setToDate] = useState(null)
   const [swapsList, setSwapsList] = useState(null)
   const [allAsset, setAllAsset] = useState([])
+  const [balances, setBalances] = useState({})
   useAsyncEffect(
     async () => {
       await init()
@@ -68,20 +69,15 @@ export const Home = () => {
       setLoading(true)
 
       const balances = await WalletEffect.getAllBalances()
-
+      setBalances(balances)
       const assets = await AssetEffect.getAllAssets()
 
       const balance = balances[WalletConstant.FsnTokenAddress] || 0
       setBalance(balance / BigNumber.generateDecimal(18))
       const userAssets = AssetEffect.getAssetsFromBalances(assets, balances)
       setAssets(userAssets)
-      let res = await getOpenSwap(
-        WalletStore.default.address
-      )
-      let swap = await AssetEffect.getAvailableSwaps(
-        res,
-        assets
-      )
+      let res = await getOpenSwap(WalletStore.default.address)
+      let swap = await AssetEffect.getAvailableSwaps(res, assets)
       setAllAsset(assets)
       setSwapsList(swap)
     } catch (e) {
@@ -206,7 +202,8 @@ export const Home = () => {
                   navigate('QuantumSwaps', {
                     data: assets,
                     swaps: swapsList,
-                    allAsset : allAsset
+                    allAsset: allAsset,
+                    balances
                   })
                 }
               />

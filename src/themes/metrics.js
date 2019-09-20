@@ -73,4 +73,8 @@ export const metrics = {
   modal: {
     width: (width * 95) / 100,
   },
+  icon:{
+    width: 20,
+    height: 20
+  }
 }

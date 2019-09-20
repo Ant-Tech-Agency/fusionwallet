@@ -60,7 +60,7 @@ export const Home = () => {
       await init()
       return setInterval(async () => {
         await init()
-      }, 30000)
+      }, 60000)
     },
     timer => {
       clearInterval(timer)
@@ -115,7 +115,6 @@ export const Home = () => {
         canChange: isFixed,
         description: '{}',
       }
-
       const txHash = await WalletEffect.createAsset(data)
 
       setAssetName('')
@@ -124,8 +123,6 @@ export const Home = () => {
       setDecimals(0)
 
       alert(txHash)
-
-      await init()
     } catch (e) {
       console.log(e)
     }
@@ -177,7 +174,6 @@ export const Home = () => {
       }
       setPickedAsset(null)
       setQuantity('')
-      await init()
     } catch (e) {
       // alert(get(e, o => o.message))
       console.log(e)

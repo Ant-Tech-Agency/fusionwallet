@@ -9,6 +9,8 @@ import {
   Switch,
   Text,
   View,
+  Clipboard,
+  TouchableOpacity,
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'react-navigation-hooks'
@@ -27,6 +29,7 @@ import { WalletStore } from '../../stores/wallet.store'
 import { TimeLock } from './components/TimeLock'
 import { TxType } from '../../constants/tx-type.constant'
 import { getAllSwaps, getOpenSwap } from '../../services/fusion.service'
+import { Toast } from '../../../components/Toast/Toast'
 
 export const Home = () => {
   const { navigate } = useNavigation()
@@ -50,10 +53,10 @@ export const Home = () => {
   const [swapsList, setSwapsList] = useState(null)
   const [allAsset, setAllAsset] = useState([])
   const [balances, setBalances] = useState({})
+  const [isToast, setIsToast] = useState(false)
   useAsyncEffect(
     async () => {
       await init()
-
       return setInterval(async () => {
         await init()
       }, 30000)
@@ -63,7 +66,13 @@ export const Home = () => {
     },
     []
   )
-
+  async function copyPubAddress() {
+    Clipboard.setString(WalletStore.default.address)
+    setIsToast(true)
+  }
+  function resetToast() {
+    setIsToast(false)
+  }
   async function init() {
     try {
       setLoading(true)
@@ -188,9 +197,14 @@ export const Home = () => {
             </View>
             <View style={s.publicAddressCover}>
               <Text style={s.textCategory}>{I18n.t('publicAddress')}:</Text>
-              <Text style={s.textPublicAddress}>
-                {WalletStore.default.address}
-              </Text>
+              <TouchableOpacity onPress={copyPubAddress}>
+                <View style={s.copyPublicKey}>
+                  <Text style={s.textPublicAddress}>
+                    {WalletStore.default.address}
+                  </Text>
+                  <Image style={s.copyIC} source={images.copy} />
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -204,7 +218,7 @@ export const Home = () => {
                     data: assets,
                     swaps: swapsList,
                     allAsset: allAsset,
-                    balances
+                    balances,
                   })
                 }
               />
@@ -316,6 +330,7 @@ export const Home = () => {
           </View>
           <AButton onPress={onLogOut} title={I18n.t('logout')} />
         </ScrollView>
+        <Toast resetToast={() => resetToast()} onShow={isToast} />
       </KeyboardAvoidingView>
     </SafeAreaView>
   )
@@ -397,5 +412,14 @@ const s = StyleSheet.create({
     fontSize: metrics.font.text.t1,
     color: colors.text.primary,
     fontWeight: 'bold',
+  },
+  copyPublicKey: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  copyIC: {
+    width: metrics.icon.width,
+    height: metrics.icon.height,
+    marginLeft: metrics.margin.base,
   },
 })

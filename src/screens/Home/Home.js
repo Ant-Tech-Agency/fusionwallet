@@ -47,13 +47,14 @@ export const Home = () => {
   const [symbol, setSymbol] = useState('')
   const [isFixed, setIsFixed] = useState(false)
   const [decimals, setDecimals] = useState(18)
-  const [timeLockType, setTimeLockType] = useState()
+  const [timeLockType, setTimeLockType] = useState('none')
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
   const [swapsList, setSwapsList] = useState(null)
   const [allAsset, setAllAsset] = useState([])
   const [balances, setBalances] = useState({})
   const [isToast, setIsToast] = useState(false)
+
   useAsyncEffect(
     async () => {
       await init()
@@ -66,13 +67,16 @@ export const Home = () => {
     },
     []
   )
+
   async function copyPubAddress() {
     Clipboard.setString(WalletStore.default.address)
     setIsToast(true)
   }
+
   function resetToast() {
     setIsToast(false)
   }
+
   async function init() {
     try {
       setLoading(true)
@@ -164,15 +168,15 @@ export const Home = () => {
         }
         case TxType.None: {
           const txHash = await WalletEffect.sendAsset(data)
+          console.log(txHash)
           alert(txHash)
+          break
         }
+        default:
+          break
       }
-
-      await init()
-
       setPickedAsset(null)
       setQuantity('')
-
       await init()
     } catch (e) {
       // alert(get(e, o => o.message))

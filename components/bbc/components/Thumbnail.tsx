@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, Image, StyleSheet, Text, Dimensions } from "react-native";
-
+import { Video } from 'expo-av'
 import { Channel } from "./Model";
 
 const { width } = Dimensions.get("window");
@@ -41,7 +41,17 @@ export default ({
   return (
     <>
       <View style={styles.container}>
-        <Image source={cover} style={styles.cover} />
+        {/*<Image source={cover} style={styles.cover} />*/}
+        <Video
+          source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="cover"
+          shouldPlay
+          isLooping
+          style={styles.cover }
+        />
       </View>
       <View style={styles.content}>
         <Text style={styles.type}>{type}</Text>

@@ -9,14 +9,24 @@ import { Loading } from '../screens/Loading/Loading'
 import { CreateNewWallet } from '../screens/CreateNewWallet/CreateNewWallet'
 import { OpenWalletWithJSON } from '../screens/OpenWalletWithJSON/OpenWalletWithJSON'
 import { QuantumSwaps } from '../screens/QuantumSwaps/QuantumSwaps'
-
-export const PublicStack = createStackNavigator(
+import { BBC } from '../../components/bbc/BBC'
+const HomeModal = createStackNavigator(
   {
     Home,
-    QuantumSwaps
+    BBC,
   },
   {
-    initialRouteName: 'Home',
+    mode: 'modal',
+    headerMode: 'none',
+  }
+)
+export const PublicStack = createStackNavigator(
+  {
+    HomeModal,
+    QuantumSwaps,
+  },
+  {
+    initialRouteName: 'HomeModal',
     headerMode: 'none',
   }
 )

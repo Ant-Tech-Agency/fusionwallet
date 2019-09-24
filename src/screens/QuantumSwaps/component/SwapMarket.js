@@ -180,7 +180,7 @@ export const SwapMarket = ({ data }) => {
                         onChangeText={value => onChangeText('SWAPRATE', value)}
                       />
                       <Text>
-                        {assetSend.Symbol} : 1 {assetSend.Symbol}
+                        {assetSend.Symbol} : 1 {assetReceive.Symbol}
                       </Text>
                     </View>
                   </View>

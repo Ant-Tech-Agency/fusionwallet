@@ -226,6 +226,21 @@ export const Home = () => {
               <ActivityIndicator size={'large'} color={'tomato'} />
             )}
           </View>
+          <View style={s.wrapInput}>
+            <Text style={s.titleFeature}> Hot News </Text>
+              <AButton
+                title={'Hot News'}
+                onPress={() =>
+                  navigate('BBC', {
+                    data: assets,
+                    swaps: swapsList,
+                    allAsset: allAsset,
+                    balances,
+                  })
+                }
+              />
+
+          </View>
 
           <View style={s.wrapInput}>
             <Text style={s.titleFeature}>{I18n.t('assetCreation')}</Text>
